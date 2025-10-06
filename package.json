@@ -1,7 +1,7 @@
 {
-  "name": "node-opa",
+  "name": "@sourceregistry/node-opa",
   "version": "1.0.0",
-  "description": "A lightweight, zero-dependency TypeScript library for creating and exposing Prometheus metrics in standard exposition and OpenMetrics format.",
+  "description": "A minimal, dependency-free TypeScript client for interacting with the Open Policy Agent (OPA) REST API",
   "main": "./dist/index.es.js",
   "module": "./dist/index.es.js",
   "types": "./dist/index.d.ts",
@@ -27,27 +27,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AlexanderSlaa/node-opa.git"
+    "url": "git+https://github.com/SourceRegistry/node-opa.git"
   },
   "keywords": [
-    "prometheus",
-    "metrics",
-    "monitoring",
-    "counter",
-    "gauge",
-    "histogram",
-    "summary",
-    "typescript",
-    "observability",
-    "openmetrics"
+    "OPA",
+    "Open Policy Agent",
+    "Rego",
+    "REST",
+    "query"
   ],
   "author": "A.P.A. Slaa (a.p.a.slaa@projectsource.nl)",
   "license": "MIT",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/AlexanderSlaa/node-opa/issues"
+    "url": "https://github.com/SourceRegistry/node-opa/issues"
   },
-  "homepage": "https://github.com/AlexanderSlaa/node-opa#readme",
+  "homepage": "https://github.com/SourceRegistry/node-opa#readme",
   "publishConfig": {
     "access": "public"
   },
