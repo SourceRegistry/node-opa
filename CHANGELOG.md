@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/SourceRegistry/node-opa/compare/v1.0.0...v1.0.1) (2025-10-06)
+
+
+### Bug Fixes
+
+* README give Authorization header back to user ([0416162](https://github.com/SourceRegistry/node-opa/commit/0416162e7f55895369d552f72b8aaa29e64f119a))
+
 # 1.0.0 (2025-10-06)
 
 
