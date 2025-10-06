@@ -1,0 +1,96 @@
+{
+  "name": "node-opa",
+  "version": "1.0.0",
+  "description": "A lightweight, zero-dependency TypeScript library for creating and exposing Prometheus metrics in standard exposition and OpenMetrics format.",
+  "main": "./dist/index.es.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "example::create-policy": "tsx examples/create-policy.ts",
+    "example::list-policies": "tsx examples/list-policies.ts",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexanderSlaa/node-opa.git"
+  },
+  "keywords": [
+    "prometheus",
+    "metrics",
+    "monitoring",
+    "counter",
+    "gauge",
+    "histogram",
+    "summary",
+    "typescript",
+    "observability",
+    "openmetrics"
+  ],
+  "author": "A.P.A. Slaa (a.p.a.slaa@projectsource.nl)",
+  "license": "MIT",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/AlexanderSlaa/node-opa/issues"
+  },
+  "homepage": "https://github.com/AlexanderSlaa/node-opa#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "@vitest/ui": "^3.2.4",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.4",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/release-notes-generator": "^14.0.3",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/npm": "^12.0.2",
+    "@semantic-release/git": "^10.0.1"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer"
+      ],
+      [
+        "@semantic-release/release-notes-generator"
+      ],
+      [
+        "@semantic-release/changelog"
+      ],
+      [
+        "@semantic-release/npm"
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "CHANGELOG.md"
+          ],
+          "message": "node-opa(release): 🚀 ${nextRelease.version} \n\n${nextRelease.notes}"
+        }
+      ]
+    ]
+  }
+}
