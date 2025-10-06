@@ -115,7 +115,7 @@ new OPAClient({
 })
 ```
 
-> **Warning**: Avoid setting `Accept`, `Content-Type`, `Authorization`, or encoding headers in `headers`—they are managed internally.
+> **Warning**: Avoid setting `Accept`, `Content-Type` or encoding headers in `headers` they are managed internally.
 
 ---
 

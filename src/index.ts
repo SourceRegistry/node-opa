@@ -13,7 +13,7 @@ export class OPAClient {
      * @param _config - Configuration object for the OPA client.
      * @param _config.baseUrl - Base URL of the OPA server (e.g., `'http://localhost:8181'`). Trailing slashes are automatically removed.
      * @param _config.headers - Optional custom headers to include with every request.
-     *   Note: Certain headers are managed internally by the client (`Accept`, `Accept-Encoding`, `Content-Type`, `Content-Encoding`, and `Authorization` if using auth).
+     *   Note: Certain headers are managed internally by the client (`Accept`, `Accept-Encoding`, `Content-Type`, `Content-Encoding`).
      *   Providing these in `headers` may override internal behavior—use with caution.
      */
     constructor(private readonly _config: {
