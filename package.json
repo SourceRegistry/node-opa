@@ -18,6 +18,7 @@
   "scripts": {
     "example::create-policy": "tsx examples/create-policy.ts",
     "example::list-policies": "tsx examples/list-policies.ts",
+    "example::evaluate-policy": "tsx examples/evaluate-policy.ts",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",

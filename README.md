@@ -1,336 +1,164 @@
-# 📊 @sourceregistry/node-prometheus
+# `@sourceregistry/node-opa` – Lightweight TypeScript Client for OPA REST API
 
-> **A lightweight, zero-dependency TypeScript library for creating and exposing Prometheus & OpenMetrics-compatible metrics.**
+A minimal, dependency-free TypeScript client for interacting with the [Open Policy Agent (OPA) REST API](https://www.openpolicyagent.org/docs/latest/rest-api/). Built with native `fetch`, supports modern browser and Node.js environments (v18+), and includes optional gzip compression for large payloads.
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![npm version](https://img.shields.io/npm/v/@sourceregistry/node-prometheus.svg)](https://www.npmjs.com/package/@sourceregistry/node-prometheus)
-
-Supports:
-- ✅ Counter
-- ✅ Gauge
-- ✅ Histogram
-- ✅ Summary
-- ✅ Untyped
-
-Exports metrics in **Prometheus exposition format** and **OpenMetrics v1.0.0** — ready for modern observability stacks.
+> **Note**: This library is still a work in progress
 
 ---
 
-## 🚀 Installation
+## ✨ Features
+
+- **Zero dependencies** – uses only native `fetch` and `CompressionStream`
+- **Full coverage** of OPA REST API:
+    - **Policy API**: List, get, create/update, delete policies
+    - **Data API**: Read/write/query OPA data documents
+    - **Query API**: Execute default and ad-hoc Rego queries
+    - **Compile API**: Partial evaluation and SQL/data filter generation
+    - **Health, Config & Status APIs**: Monitor and inspect OPA instance
+- **TypeScript-first** – fully typed request/response interfaces
+- **Automatic gzip compression** for JSON bodies (when supported)
+- **Configurable base URL and headers**
+- **Detailed error handling** with OPA error messages
+
+---
+
+## 📦 Installation
 
 ```bash
-npm install @sourceregistry/node-prometheus
+npm install @sourceregistry/node-opa
 ```
 
-> ✅ Zero external dependencies — pure TypeScript.
+> **Note**: Requires a runtime that supports `fetch` and (optionally) `CompressionStream`. In Node.js, use version 18+ or polyfill `fetch`.
 
 ---
 
-## 🧩 Usage Examples
-
-### Counter
+## 🚀 Quick Start
 
 ```ts
-import { Counter } from '@sourceregistry/node-prometheus';
+import { OPAClient } from '@sourceregistry/node-opa';
 
-let requestCount = 0;
-
-const counter = new Counter({
-  name: 'http_requests_total',
-  description: 'Total number of HTTP requests',
-  reader: () => [requestCount]
-});
-
-// Later...
-requestCount++;
-```
-
-### Gauge
-
-```ts
-import { Gauge } from '@sourceregistry/node-prometheus';
-
-const gauge = new Gauge({
-  name: 'current_temperature_celsius',
-  description: 'Current temperature in Celsius',
-  reader: () => [getTemperature()] // e.g., returns 23.5
-});
-```
-
-### Histogram
-
-```ts
-import { Histogram } from '@sourceregistry/node-prometheus';
-
-const histogram = new Histogram({
-  name: 'response_time_seconds',
-  description: 'HTTP response time in seconds',
-  buckets: [0.1, 0.5, 1, 2.5, 5]
-});
-
-histogram.observe(0.73); // Updates buckets, sum, and count
-```
-
-### Summary
-
-```ts
-import { Summary } from '@sourceregistry/node-prometheus';
-
-const summary = new Summary({
-  name: 'request_duration_seconds',
-  description: 'Request duration with quantiles',
-  quantiles: [0.5, 0.9, 0.99],
-  calculate: (value, quantile) => {
-    // Example: simple moving average
-    const current = /* your state */ 0;
-    return current * 0.9 + value * 0.1;
+// Initialize client
+const opa = new OPAClient({
+  baseUrl: 'http://localhost:8181',
+  headers: {
+    // Optional: add auth or custom headers
+    // 'Authorization': 'Bearer <token>'
   }
 });
 
-summary.observe(1.2);
+// List all policies
+const policies = await opa.policy.list();
+console.log(policies.result);
+
+// Evaluate a policy decision
+const result = await opa.data.post('example/allow', {
+  input: { user: 'alice', action: 'read' }
+});
+console.log(result.result); // true / false / data
+
+// Add a new policy
+await opa.policy.put('authz.rego', `
+  package example
+  allow if {
+    input.user == "admin"
+  }
+`);
 ```
 
-### Untyped
+---
+
+## 🔧 API Reference
+
+The client exposes grouped methods under intuitive namespaces:
+
+### Policy Management
+- `opa.policy.list()` – list all policies
+- `opa.policy.get(id)` – retrieve a policy by ID
+- `opa.policy.put(id, rego)` – create or update a policy
+- `opa.policy.delete(id)` – remove a policy
+
+### Data Operations
+- `opa.data.get(path, options)` – read a document (GET with query params)
+- `opa.data.post(path, { input })` – read with input in body (POST)
+- `opa.data.webhook(path, input)` – webhook-style evaluation (`/v0`)
+- `opa.data.put(path, doc)` – create/overwrite a document
+- `opa.data.patch(path, ops)` – apply JSON Patch (RFC 6902)
+- `opa.data.delete(path)` – delete a document
+
+### Query Execution
+- `opa.query.default(input)` – evaluate default decision (`POST /`)
+- `opa.query.adhoc(query, input?)` – run ad-hoc Rego query
+
+### Compile & Optimize
+- `opa.compile.partialEval(req)` – partial evaluation for optimization
+- `opa.compile.filter(path, req, accept)` – compile to SQL or other filters
+
+### Observability
+- `opa.health.check()` – standard health check
+- `opa.health.custom('ready')` – custom `/health/<name>` endpoints
+- `opa.config.get()` – retrieve active configuration
+- `opa.status.get()` – get operational status
+
+> See [OPA REST API docs](https://www.openpolicyagent.org/docs/latest/rest-api/) for full endpoint details.
+
+---
+
+## ⚙️ Configuration
 
 ```ts
-import { Untyped } from '@sourceregistry/node-prometheus';
-
-const untyped = new Untyped({
-  name: 'some_legacy_metric',
-  value: 42
-});
-
-untyped.set(43);
+new OPAClient({
+  baseUrl: 'http://opa:8181', // required
+  headers: {
+    // Custom headers (avoid overriding Content-Type, Accept, etc.)
+    'X-Custom-Header': 'value'
+  }
+})
 ```
 
-### Combine Multiple Metrics (with Format Support)
+> **Warning**: Avoid setting `Accept`, `Content-Type`, `Authorization`, or encoding headers in `headers`—they are managed internally.
 
-Use `Metric.concat()` to serialize multiple metrics into a single string. You can specify `'prometheus'` (default) or `'openmetrics'` format.
+---
+
+## 🛡️ Authentication
+
+If your OPA instance uses token authentication:
 
 ```ts
-import { Metric, Counter, Gauge } from '@sourceregistry/node-prometheus';
-
-let requestCount = 0;
-
-const counter = new Counter({
-  name: 'http_requests_total',
-  description: 'Total HTTP requests',
-  reader: () => [requestCount]
-});
-
-const gauge = new Gauge({
-  name: 'cpu_usage_percent',
-  description: 'Current CPU usage',
-  reader: () => [Math.random() * 100]
-});
-
-// Serialize in Prometheus format (default)
-const promOutput = await Metric.concat('prometheus', counter, gauge);
-console.log(promOutput);
-// # HELP http_requests_total ...
-// # TYPE http_requests_total counter
-// http_requests_total 0 1712345678901
-// ...
-
-// Serialize in OpenMetrics format
-const omOutput = await Metric.concat('openmetrics', counter, gauge);
-console.log(omOutput);
-// # HELP http_requests_total ...
-// # TYPE http_requests_total counter
-// http_requests_total 0 1712345678901
-// ...
-// # EOF
-```
-
-> ✅ In OpenMetrics mode, `# EOF` is automatically appended, and trailing whitespace is trimmed.
-
----
-
-## 🌐 HTTP Server Example (Auto-negotiates Prometheus/OpenMetrics)
-
-This example uses `Metric.concat(format, ...)` to serve the correct format based on the client’s `Accept` header.
-
-```ts
-// examples/server.ts
-import { createServer } from 'http';
-import { Counter, Gauge, Histogram, Metric, Untyped } from '@sourceregistry/node-prometheus';
-
-const gauge = new Gauge({
-  name: 'random_gauge',
-  description: 'Random gauge value updated on each scrape',
-  reader: () => [Math.random() * 100],
-});
-
-const histogram = new Histogram({
-  name: 'random_histogram',
-  description: 'Histogram of random values',
-  buckets: [0.1, 0.2, 0.5, 1.0],
-});
-
-let hits = 0;
-
-const counter = new Counter({
-  name: 'http_requests_total',
-  description: 'Total HTTP requests handled',
-  reader: () => [[hits, { method: 'GET', endpoint: '/metrics' }]],
-});
-
-const untyped = new Untyped({
-  name: 'uptime_seconds',
-  description: 'Server uptime in seconds',
-  value: [0, Date.now()],
-});
-
-// Simulate background metric updates
-setInterval(() => {
-  histogram.observe(Math.random());
-  const uptime = (Date.now() - untyped.get()[1]) / 1000;
-  untyped.set(uptime);
-}, 2000);
-
-// HTTP Server with OpenMetrics negotiation
-createServer(async (req, res) => {
-  console.log(`Scraped at ${new Date().toISOString()}`);
-  hits++;
-
-  const acceptHeader = req.headers['accept'] || '';
-  const format = acceptHeader.includes('application/openmetrics-text') ? 'openmetrics' : 'prometheus';
-
-  res.writeHead(200, {
-    'Content-Type': format === 'openmetrics'
-      ? 'application/openmetrics-text; version=1.0.0; charset=utf-8'
-      : 'text/plain; version=0.0.4; charset=utf-8',
-  });
-
-  const output = await Metric.concat(format, gauge, histogram, counter, untyped);
-  res.end(output);
-}).listen(8080, '0.0.0.0', () => {
-  console.log('✅ Metrics server: http://localhost:8080');
+const opa = new OPAClient({
+  baseUrl: 'https://opa.example.com',
+  headers: {
+    'Authorization': 'Bearer your-secret-token'
+  }
 });
 ```
 
-Run it:
-
-```bash
-npm run example::http.server
-```
-
-Then test:
-
-```bash
-curl -H "Accept: application/openmetrics-text" http://localhost:8080
-curl http://localhost:8080  # defaults to Prometheus format
-```
+Ensure OPA is started with `--authentication=token`.
 
 ---
 
-## 📏 Prometheus Exposition Format
+## 📄 Types
 
-Compatible with classic Prometheus scrapers:
+All responses are strongly typed. Common types include:
 
-```
-# HELP http_requests_total Total number of HTTP requests
-# TYPE http_requests_total counter
-http_requests_total{method="GET",endpoint="/metrics"} 5 1712345678901
-
-# HELP response_time_seconds HTTP response time in seconds
-# TYPE response_time_seconds histogram
-response_time_seconds_bucket{le="0.1"} 3
-response_time_seconds_bucket{le="0.5"} 15
-response_time_seconds_bucket{le="1"} 20
-response_time_seconds_bucket{le="+Inf"} 20
-response_time_seconds_sum 12.34
-response_time_seconds_count 20
-```
+- `Document = any` – generic JSON-like data
+- `PolicyModule` – policy metadata with `raw` and `ast`
+- `GetDataResponse<T>` – includes `result`, `metrics`, `provenance`, etc.
+- Request/response types for compile, query, config, and status APIs
 
 ---
 
-## 📐 OpenMetrics Format (Modern Standard)
+## 🧪 Testing & Compatibility
 
-When client sends `Accept: application/openmetrics-text`, server responds with:
-
-```
-# HELP random_gauge Random gauge value updated on each scrape
-# TYPE random_gauge gauge
-random_gauge 42.17 1712345678901
-
-# HELP random_histogram Histogram of random values
-# TYPE random_histogram histogram
-random_histogram_bucket{le="0.1"} 3 1712345678901
-random_histogram_bucket{le="0.2"} 7 1712345678901
-random_histogram_bucket{le="0.5"} 15 1712345678901
-random_histogram_bucket{le="1.0"} 20 1712345678901
-random_histogram_bucket{le="+Inf"} 20 1712345678901
-random_histogram_sum 12.34 1712345678901
-random_histogram_count 20 1712345678901
-
-# HELP http_requests_total Total HTTP requests handled
-# TYPE http_requests_total counter
-http_requests_total{method="GET",endpoint="/metrics"} 5 1712345678901
-
-# HELP uptime_seconds Server uptime in seconds
-# TYPE uptime_seconds untyped
-uptime_seconds 124.3 1712345678901
-
-# EOF
-```
-
-> ✅ Required: `+Inf` bucket, `# EOF`, correct `Content-Type`.
+- Works in modern browsers and Node.js ≥18
+- Gzip compression automatically disabled if `CompressionStream` is unavailable
+- All methods return native `Promise`s
 
 ---
 
-## 🛠️ Features
+## 📄 License
 
-- ✅ **Type-safe** — Full TypeScript support with JSDoc.
-- ✅ **Async/Sync Readers** — Gauge/Counter support both.
-- ✅ **Label Support** — Per-metric and per-sample labels.
-- ✅ **Timestamps** — Optional sample timestamps.
-- ✅ **Validation** — Input sanitization and error handling.
-- ✅ **Extensible** — Easy to extend or override behavior.
-- ✅ **OpenMetrics Ready** — Auto-negotiation support in HTTP example.
-- ✅ **Zero Dependencies** — Pure TypeScript, no bloat.
+MIT
 
 ---
 
-## 🧪 Testing
-
-Comes with **Vitest-compatible tests** covering all metric types, serialization, edge cases, and error handling.
-
-Run tests:
-
-```bash
-npm test          # Watch mode
-npm run test:ui   # GUI
-npm run test:coverage  # Coverage report
-```
-
----
-
-## 👾 Examples
-
-See the [`examples/`](./examples) folder in this repository for:
-
-- Basic metric usage
-- HTTP server with Prometheus/OpenMetrics support
-- Histogram/Summary simulations
-
----
-
-## 📜 License
-
-**Apache License 2.0** — See [LICENSE](./LICENSE) for details.
-
----
-
-## 🤝 Contributing
-
-PRs welcome! Please ensure:
-
-- ✅ Code matches existing style and JSDoc standards
-- ✅ Tests are added for new features
-- ✅ No external dependencies added
-- ✅ `npm run build` and `npm test` pass
-
----
-
-> 💡 **Note**: This library generates exposition format only. You must expose it via HTTP (e.g., Express, Fastify, or plain `http`) for Prometheus to scrape. See the HTTP example above to get started quickly.
+> **Note**: This client is community-maintained and not officially affiliated with the Open Policy Agent project. Refer to [OPA’s official documentation](https://www.openpolicyagent.org/docs/latest/) for API semantics and behavior.

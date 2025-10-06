@@ -85,6 +85,7 @@ export class OPAClient {
             ...options,
             headers,
             body,
+            ...(body instanceof ReadableStream ? {duplex: 'half'} : undefined),
         });
 
         if (!response.ok) {
