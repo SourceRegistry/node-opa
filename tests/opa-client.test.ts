@@ -1,12 +1,12 @@
 import {describe, it, expect, vi, beforeEach, afterEach} from 'vitest';
-import {OPAClient} from '../src';
+import {OPAClient, OpenPolicyAgent} from '../src';
 
 // Mock global fetch
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
 describe('OPAClient', () => {
-    let client: OPAClient;
+    let client: OpenPolicyAgent.Client
 
     beforeEach(() => {
         client = new OPAClient({baseUrl: 'http://localhost:8181'});
