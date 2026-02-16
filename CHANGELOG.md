@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/SourceRegistry/node-opa/compare/v1.0.3...v1.0.4) (2026-02-16)
+
+
+### Bug Fixes
+
+* README.md ([678e74b](https://github.com/SourceRegistry/node-opa/commit/678e74b3e3be15c32574dedcedcea46921057b14))
+
 ## [1.0.3](https://github.com/SourceRegistry/node-opa/compare/v1.0.2...v1.0.3) (2026-02-16)
 
 
