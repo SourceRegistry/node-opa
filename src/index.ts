@@ -265,12 +265,12 @@ export namespace OpenPolicyAgent {
                     const resp_body = JSON.parse(bodyText);
                     if ('code' in resp_body && resp_body.code) code = resp_body.code;
                     if ('message' in resp_body && resp_body.message) message = resp_body.message;
-                    if ('errors' in resp_body && resp_body.errors) code = resp_body.errors;
+                    if ('errors' in resp_body && resp_body.errors) errors = resp_body.errors;
                 }
             } catch {
                 // Ignore
             }
-            return new ClientError(code, message,errors, response);;
+            return new ClientError(code, message,errors, response);
         }
 
     }

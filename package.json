@@ -49,18 +49,18 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/node": "^24.9.1",
-    "@vitest/ui": "^4.0.4",
-    "tsx": "^4.20.6",
+    "@types/node": "^25.2.3",
+    "@vitest/ui": "^4.0.18",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typedoc": "^0.28.14",
-    "vite": "^7.1.12",
+    "typedoc": "^0.28.17",
+    "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^4.0.4",
+    "vitest": "^4.0.18",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/release-notes-generator": "^14.0.3",
     "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/npm": "^12.0.2",
+    "@semantic-release/npm": "^13.1.4",
     "@semantic-release/git": "^10.0.1"
   },
   "release": {
