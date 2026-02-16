@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/SourceRegistry/node-opa/compare/v1.0.2...v1.0.3) (2026-02-16)
+
+
+### Bug Fixes
+
+* better error handling and parsing and updated libraries ([9fb5c34](https://github.com/SourceRegistry/node-opa/commit/9fb5c34bbfc999e304a9b37676b1f21fd9293472))
+
 ## [1.0.2](https://github.com/SourceRegistry/node-opa/compare/v1.0.1...v1.0.2) (2026-02-16)
 
 

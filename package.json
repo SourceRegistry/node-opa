@@ -1,6 +1,6 @@
 {
   "name": "@sourceregistry/node-opa",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A minimal, dependency-free TypeScript client for interacting with the Open Policy Agent (OPA) REST API",
   "main": "./dist/index.es.js",
   "module": "./dist/index.es.js",
