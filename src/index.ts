@@ -233,6 +233,48 @@ export namespace OpenPolicyAgent {
         get(pretty?: boolean): Promise<GetStatusResponse>
     }
 
+    export type OPAError = {
+        readonly code: string,
+        readonly message: string,
+        readonly location: { file: string, row: number, col: number }
+        readonly details: { line: string, idx: number }
+    }
+
+    export class ClientError extends Error {
+
+
+        constructor(public readonly code: string, message: string, public readonly errors: OPAError[], public readonly response: Response) {
+            super(message);
+        }
+
+        toString() {
+            return JSON.stringify({
+                code: this.code,
+                message: this.message,
+                errors: this.errors
+            })
+        }
+
+        static async fromResponse(response: Response){
+            let code: string = 'unknown';
+            let message = `OPA request failed: ${response.status} ${response.statusText}`;
+            let errors: OPAError[] = [];
+            try {
+                const bodyText = await response.text();
+                if (bodyText) {
+                    const resp_body = JSON.parse(bodyText);
+                    if ('code' in resp_body && resp_body.code) code = resp_body.code;
+                    if ('message' in resp_body && resp_body.message) message = resp_body.message;
+                    if ('errors' in resp_body && resp_body.errors) code = resp_body.errors;
+                }
+            } catch {
+                // Ignore
+            }
+            return new ClientError(code, message,errors, response);;
+        }
+
+    }
+
     /**
      * A lightweight TypeScript client for the Open Policy Agent (OPA) REST API.
      * Uses the native `fetch` API and requires no external dependencies.
@@ -324,19 +366,7 @@ export namespace OpenPolicyAgent {
             });
 
             if (!response.ok) {
-                let message = `OPA request failed: ${response.status} ${response.statusText}`;
-                let cause: any;
-                try {
-                    const bodyText = await response.text();
-                    if (bodyText) {
-                        cause = JSON.parse(bodyText);
-                        if (cause.message) message += ` - ${cause.message}`;
-                    }
-                } catch {
-                    // Ignore
-                }
-                // @ts-ignore
-                throw new Error(message, {cause});
+                throw await ClientError.fromResponse(response);
             }
 
             const text = await response.text();
