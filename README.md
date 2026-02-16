@@ -35,7 +35,7 @@ npm install @sourceregistry/node-opa
 ## 🚀 Quick Start
 
 ```ts
-import { OPAClient } from '@sourceregistry/node-opa';
+import { OPAClient, OpenPolicyAgent } from '@sourceregistry/node-opa';
 
 // Initialize client
 const opa = new OPAClient({
@@ -63,6 +63,16 @@ await opa.policy.put('authz.rego', `
     input.user == "admin"
   }
 `);
+
+// Typed error handling
+try {
+  await opa.policy.get('missing.rego');
+} catch (error) {
+  if (error instanceof OpenPolicyAgent.ClientError) {
+    console.error(error.code, error.message);
+    console.error(error.errors); // OPAError[]
+  }
+}
 ```
 
 ---
@@ -143,7 +153,28 @@ All responses are strongly typed. Common types include:
 - `Document = any` – generic JSON-like data
 - `PolicyModule` – policy metadata with `raw` and `ast`
 - `GetDataResponse<T>` – includes `result`, `metrics`, `provenance`, etc.
+- `OPAError` – structured OPA error details (`code`, `message`, `location`, `details`)
+- `ClientError` – thrown on non-2xx responses (`code`, `message`, `errors`, `response`)
 - Request/response types for compile, query, config, and status APIs
+
+### Error Types
+
+```ts
+type OPAError = {
+  readonly code: string;
+  readonly message: string;
+  readonly location: { file: string; row: number; col: number };
+  readonly details: { line: string; idx: number };
+};
+```
+
+```ts
+class ClientError extends Error {
+  readonly code: string;
+  readonly errors: OPAError[];
+  readonly response: Response;
+}
+```
 
 ---
 
