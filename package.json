@@ -1,6 +1,6 @@
 {
   "name": "@sourceregistry/node-opa",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A minimal, dependency-free TypeScript client for interacting with the Open Policy Agent (OPA) REST API",
   "main": "./dist/index.es.js",
   "module": "./dist/index.es.js",
@@ -22,7 +22,6 @@
     "example::all-in-one": "tsx examples/all-in-one.ts",
     "build": "tsc && vite build",
     "build:docs": "typedoc src/index.ts --out docs --name \"node-opa\" --theme default --excludePrivate --excludeProtected",
-
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
